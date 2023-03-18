@@ -2,9 +2,9 @@
   "name": "coderbot",
   "version": "1.0.0",
   "description": "a simple virtualbot",
-  "main": "index.js",
+   "main":"app.mjs",
   "scripts": {
-    "start":"DEBUG=coderbot:* npm start",
+    "start":"cross-env DEBUG=coderbot:* node ./app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

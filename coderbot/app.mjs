@@ -1,5 +1,5 @@
 import { default as express } from "express";
-import { default as hbs } from "hbs";
+import { default as ejs } from "ejs";
 import * as path from "path";
 // import * as favicon from 'serve-favicon';
 import { default as logger } from "morgan";
@@ -20,8 +20,8 @@ import { router as indexRouter } from "./routes/index.mjs";
 export const app = express();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "hbs");
-hbs.registerPartials(path.join(__dirname, "partials"));
+app.set("view engine", "ejs");
+app.set("partials", "./partials");
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger("dev"));

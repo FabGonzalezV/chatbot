@@ -2,45 +2,53 @@
 const recognition = new webkitSpeechRecognition();
 recognition.lang = "es-MX";
 recognition.interimResults = false;
-
 recognition.onend = (event) => {
   recognition.start();
 };
-// Agregar un evento de resultado para manejar los resultados del reconocimiento de voz
+// Agregar un evento de resultado para manejar los resultados
+// del reconocimiento de voz
 recognition.onresult = function (event) {
   const last = event.results.length - 1;
   const phrase = event.results[last][0].transcript;
-  const regex = /alexa/i; // Expresión regular para buscar el patrón
+  // Expresión regular para buscar el patrón
+  
+
+  const regex = /chat/i;
   if (regex.test(phrase)) {
-    console.log(phrase + ": ");
+    console.log(phrase);
     generarRespuesta(phrase);
   }
 };
-/////////////////////7
-async function generarRespuesta(phrase) {
-  const entradaTexto = phrase;
-  const respuesta = await fetch(
-    "https://api.openai.com/v1/engines/text-davinci-003/completions",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer  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",
-      },
 
-      body: JSON.stringify({
-        prompt: `La siguiente es una conversación entre un humano 
-        y una IA. El humano dice: ${entradaTexto}\n`,
-        max_tokens: 1024,
-        n: 1,
-        stop: null,
-        temperature: 0.5,
-      }),
-    }
-  );
-  const respuestaJSON = await respuesta.json();
-  const respuestaGenerada = respuestaJSON.choices[0].text;
+async function generarRespuesta(phrase) {
+   
+   const respuesta = await fetch(
+     "https://api.openai.com/v1/engines/text-davinci-003/completions",
+     {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+         Authorization:
+           "Bearer  <API_KEY>",
+       },
+
+       body: JSON.stringify({
+         prompt: `La siguiente es una conversación entre un humano 
+        y una IA. El huamano dice: ${phrase}\n`,
+         temperature: 0.9,
+         max_tokens: 2048,
+         n: 1,
+         top_p: 1,
+         frequency_penalty: 0.0,
+         presence_penalty: 0.6,
+         stop: [" Human:", " AI:"],
+       }),
+     }
+   );
+   const respuestaJSON = await respuesta.json();
+    
+   const respuestaGenerada = respuestaJSON.choices[0].text.trim();
+
   const oraciones = respuestaGenerada.split(" ");
   let nuevaFrase = "";
   let contador = 0;
@@ -51,7 +59,7 @@ async function generarRespuesta(phrase) {
     .getVoices()
     .find((voice) => voice.lang === "es-MX");
   console.log(respuestaGenerada);
-
+  transcribir(respuestaGenerada);
   if (oraciones.length <= 15) {
     const voice = new SpeechSynthesisUtterance(respuestaGenerada);
     voice.voice = mexicanSpanishVoice;
@@ -96,4 +104,9 @@ async function generarRespuesta(phrase) {
   // }
 }
 // Iniciar el reconocimiento de voz
+
+function transcribir(respuestaGenerada) {
+  const texto = document.getElementById("code");
+  texto.innerText += "\n"+respuestaGenerada + "\n";
+}
 recognition.start();
